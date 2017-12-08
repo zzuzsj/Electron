@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ShellHub</title>
+    <link href="./css/index.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="g-header" id="hubHeader" style="-webkit-app-region: drag">
+        <div class="g-header-info" style="-webkit-app-region: no-drag">
+            <i class="g-header-icon"></i>
+            <b class="g-header-title" v-text="title">{{ title }}</b>
+        </div>
+        <div class="g-header-btnbox" style="-webkit-app-region: no-drag">
+            <b class="g-header-btn j-header-close" @click="quitApp">x</b>
+            <b class="g-header-btn j-header-mini" @click="minisizeWindow">-</b>
+        </div>
+    </div>
+    <div class="g-body" id="hubBody">
+        <table class="g-body-table">
+            <colgroup>
+                <col width="20%">
+                <col width="40%">
+                <col width="40%">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>名称</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody v-for="(shellname,index) in shellArray">
+                <tr :data-shellname="shellname">
+                    <td>{{ shellData[shellname].name }}</td>
+                    <td>
+                        <div class="u-shell-process" v-if="shellData[shellname].running">运行中</div>
+                        <div class="u-shell-noprocess" v-if="!shellData[shellname].running">等待中</div>
+                    </td>
+                    <td>
+                        <a class="u-shell-editbtn j-shell-run" @click="shellRun(shellname)">运行</a>
+                        <a class="u-shell-editbtn j-shell-edit" @click="shellEdit(shellname)">编辑</a>
+                        <a class="u-shell-editbtn j-shell-del" @click="shellDel(shellname,index)">删除</a>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+    <div class="g-footer" id="hubFooter">
+        <div class="g-footer-btnbox" @click="addFile">
+            <i class="g-footer-icon u-footer-addfile"></i>
+            <b class="g-footer-btnname">添加</b>
+        </div>
+        <div class="g-footer-btnbox" @click="setUp">
+            <i class="g-footer-icon u-footer-setup"></i>
+            <b class="g-footer-btnname">设置</b>
+        </div>
+        <div class="g-footer-btnbox" @click="about">
+            <i class="g-footer-icon u-footer-about"></i>
+            <b class="g-footer-btnname">关于</b>
+        </div>
+    </div>
+    <div class="g-html-black" id="hubBlack" v-show="isShow">
+        <div class="u-shell-addbox" v-show="activeState == 'add'">
+            <div class="g-add-l u-clearfix">
+                <label>脚本名称：</label>
+                <div>
+                    <input class="u-input-l" type="text" ref="nameDom" :value="(fillInfo)?curShell.name:''" placeholder="请输入脚本名称">
+                </div>
+            </div>
+            <div class="g-add-l u-clearfix">
+                <label>选择文件：</label>
+                <div>
+                    <input class="u-input-m" type="text" ref="fileName" :value="(fillInfo)?curShell.filePath:''" placeholder="请选择脚本文件">
+                    <a class="j-select-file u-input-s" @click="fileTrigger">选择</a>
+                    <input class="u-display-none" name="shellfile" type="file" @change="fileChange" ref="fileDom" value="选择">
+                </div>
+            </div>
+            <div class="g-add-l u-clearfix">
+                <label>运行命令：</label>
+                <div>
+                    <input class="u-input-l" type="text" ref="codeDom" :value="(fillInfo)?curShell.runCode:''" placeholder="请输入脚本运行命令">
+                </div>
+            </div>
+            <div class="g-add-l u-clearfix">
+                <label>存储路径：</label>
+                <div>
+                    <input class="u-input-m" type="text" :value="(fillInfo)?curShell.storePath:''" ref="storePath" placeholder="请选择文件存储路径">
+                    <a class="j-select-file u-input-s" @click="storeChange">目录</a>
+                </div>
+            </div>
+            <div class="g-add-l u-clearfix">
+                <div class="g-add-btncontainer">
+                    <a class="g-add-btn j-add-confirm" @click="confirmAdd">
+                        确定
+                    </a>
+                    <a class="g-add-btn j-add-cancel" @click="hideBlack">
+                        取消
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="u-message-box" v-show="alertTips">
+            <p class="u-message-boxtip">{{ tips }}</p>
+        </div>
+    </div>
+</body>
+<script src="./js/vue.js"></script>    
+<script>
+    const ipcRenderer = require('electron').ipcRenderer;
+    const dialog = require('electron').remote.dialog;
+    const app = require('electron').remote.app;
+    const fs = require('fs');
+    const child_process = require('child_process');
+    let userPath = app.getPath('userData');
+    if (!fs.existsSync(userPath + '/Shell')) {
+        fs.mkdirSync(userPath + '/Shell');
+        var json = `{
+            "name": "shellhub",
+            "version": "1.0.0",
+            "description": "This is a exe for running node shells ",
+            "main": "common.js",
+            "scripts": {
+                "test": "echo \\"Error: no test specified\\" && exit 1"
+            },
+            "repository": {
+                "type": "git",
+                "url": "https://github.com/zzuzsj.Electron.git"
+            },
+            "keywords": [
+                "running",
+                "shells"
+            ],
+            "author": "zzuzsj",
+            "license": "ISC"
+        }`;
+        fs.writeFileSync(userPath+'/Shell/package.json',json,{
+            encoding:'utf-8',
+            flag:'w'
+        });
+    };
+    let shellTxt = fs.readFileSync('./resources/app/src/config/shell.json', {
+        encoding: 'utf-8'
+    });
+    let shellJson = JSON.parse(shellTxt);
+    let shellArray = [];
+    for (let k in shellJson) {
+        shellArray.push(k);
+    }
+    let header = new Vue({
+        el: '#hubHeader',
+        data: {
+            title: 'ShellHub'
+        },
+        methods: {
+            quitApp: function () {
+                ipcRenderer.send('app-quit');
+            },
+            minisizeWindow: function () {
+                ipcRenderer.send('win-mini');
+            }
+        }
+    });
+    let body = new Vue({
+        el: '#hubBody',
+        data: {
+            title: 'ShellHub',
+            shellData: shellJson,
+            shellArray: shellArray
+        },
+        methods: {
+            shellRun: function (shellName) {
+                if (shellName) {
+                    let runcode = this.$data.shellData[shellName].runCode;
+                    var shellpath = [userPath.replace(/\\/g,'\\\\'),'Shell',shellJson[shellName].fileName].join('\\\\');
+                    runcode = runcode.split(' ');
+                    // runcode = runcode.splice(1,1,shellpath);
+                    runcode[1]=shellpath;
+                    runcode.push(this.$data.shellData[shellName].storePath.replace(/\\/g,'\\\\'));
+                    this.$data.shellData[shellName].running = true;
+                    runcode = runcode.join(' ');
+                    child_process.exec(runcode, (error, stdout, stderr) => {
+                        if (error) {
+                            throw error;
+                        }
+                        this.$data.shellData[shellName].running = false;                        
+                        alert(stdout);
+                        if(stderr){
+                            alert("脚本运行出错，返回错误为："+stderr);
+                        }
+                    });
+                }
+            },
+            shellEdit: function (shellName) {
+                if (shellName) {
+                    black.isShow = true;
+                    black.activeState = 'add';
+                    black.fillInfo = true;
+                    black.curShell = shellJson[shellName];
+                }
+            },
+            shellDel: function (shellName, index) {
+                if (shellName) {
+                    let shellpath = userPath + '/Shell/' + shellJson[shellName].fileName;
+                    if (shellJson[shellName].filePath != '') {
+                        fs.unlinkSync(shellpath);
+                    }
+                    delete shellJson[shellName];
+                    shellArray.splice(index, 1);
+                    black.$data.tips = '删除成功';
+                    this.saveShellJson();
+                }
+            },
+            saveShellJson: function () {
+                let jsonStr = JSON.stringify(shellJson);
+                fs.writeFile('./resources/app/src/config/shell.json', jsonStr, {
+                    encoding: 'utf-8',
+                    flag: 'w'
+                }, function () {
+                    black.$data.alertTips = true;
+                    setTimeout(function () {
+                        black.$data.tips = 'none';
+                        black.$data.alertTips = false;
+                        black.hideBlack();
+                    }, 1000);
+                    return false;
+                })
+            }
+        }
+    });
+    let footer = new Vue({
+        el: '#hubFooter',
+        data: {
+            title: 'ShellHub'
+        },
+        methods: {
+            addFile: function () {
+                black.isShow = true;
+                black.activeState = 'add';
+                black.fillInfo = false;
+            },
+            setUp: function () {
+                black.isShow = true;
+                black.activeState = 'set';
+                black.fillInfo = false;
+            },
+            about: function () {
+                black.isShow = true;
+                black.activeState = 'about';
+                black.fillInfo = false;
+            }
+        }
+    });
+    let black = new Vue({
+        el: '#hubBlack',
+        data: {
+            isShow: false,
+            activeState: 'none',
+            fillInfo: false,
+            alertTips: false,
+            tips: 'none',
+            curShell: {}
+        },
+        methods: {
+            checkInfo: function () {
+                let that = this;
+                if (that.$refs.nameDom.value == '' || !that.$refs.nameDom.value) {
+                    that.$data.tips = '请输入脚本名称';
+                    that.$data.alertTips = true;
+                    setTimeout(function () {
+                        that.$data.tips = 'none';
+                        that.$data.alertTips = false;
+                    }, 1000);
+                    return false;
+                } else if (!that.$data.fillInfo) {
+                    let name = that.$refs.nameDom.value;
+                    if (shellJson[name]) {
+                        that.$data.tips = '脚本名称已存在';
+                        that.$data.alertTips = true;
+                        setTimeout(function () {
+                            that.$data.tips = 'none';
+                            that.$data.alertTips = false;
+                        }, 1000);
+                        return false;
+                    }
+                }
+                if (that.$refs.codeDom.value == '' || !that.$refs.codeDom.value) {
+                    that.$data.tips = '请输入运行命令';
+                    that.$data.alertTips = true;
+                    setTimeout(function () {
+                        that.$data.tips = 'none';
+                        that.$data.alertTips = false;
+                    }, 1000);
+                    return false;
+                }
+                return true;
+            },
+            confirmAdd: function () {
+                let that = this;
+                if (!that.checkInfo()) {
+                    return;
+                }
+                let name = that.$refs.nameDom.value;
+                let fileName = that.$refs.fileName.value;
+                let runCode = that.$refs.codeDom.value;
+                let file = that.$refs.fileDom.files[0];
+                let storePath = that.$refs.storePath.value;
+                let shellJsonCopy = shellJson;
+                if (!that.$data.fillInfo) {
+                    let shellObj = {};
+                    shellObj.name = name;
+                    shellObj.runCode = runCode;
+                    shellObj.storePath = storePath;
+                    shellObj.running = false;
+                    black.$data.tips = '添加成功';
+                    if (file) {
+                        shellObj.filePath = file.path;
+                        shellObj.fileName = file.name;
+                        fs.createReadStream(file.path)
+                            .pipe(fs.createWriteStream(userPath + '/Shell/' + file.name))
+                            .on('close', function () {
+                                shellJson[name] = shellObj;
+                                shellArray.push(name);
+                                body.saveShellJson();
+                            });
+                    } else {
+                        shellObj.filePath = '';
+                        shellJson[name] = shellObj;
+                        shellArray.push(name);
+                        body.saveShellJson();
+                    }
+                }
+            },
+            hideBlack: function () {
+                this.$data.isShow = false;
+                this.$data.activeState = 'none';
+                this.$data.fillInfo = false;
+                this.$data.curShell = {};
+            },
+            fileTrigger: function () {
+                this.$refs.fileDom.click();
+            },
+            fileChange: function () {
+                let file = this.$refs.fileDom.files[0];
+                this.$refs.fileName.value = file.name;
+            },
+            storeChange: function () {
+                let that = this;
+                dialog.showOpenDialog({
+                    properties: ['openDirectory']
+                }, function (filenames) {
+                    if (filenames) {
+                        that.$refs.storePath.value = filenames;
+                    } else {
+                        that.$refs.storePath.value = './';
+                        return;
+                    }
+                });
+            }
+        }
+    });
+</script>
+
+</html>

@@ -1,0 +1,302 @@
+@charset "utf-8";
+
+/* 
+布局：以 g 为命名空间，例如：..g-wrap 、..g-header、..g-content。
+状态：以 s 为命名空间，表示动态的、具有交互性质的状态，例如：.s-current、s-selected。
+工具：以 u 为命名空间，表示不耦合业务逻辑的、可复用的的工具，例如：u-clearfix、u-ellipsis。
+组件：以 m 为命名空间，表示可复用、移植的组件模块，例如：m-slider、m-dropMenu。
+钩子：以 j 为命名空间，表示特定给 JavaScript 调用的类名，例如：j-request、j-open。 
+*/
+
+
+/* ------------------------------------------------------------------------------ */
+*{
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    height: 100%;
+    width: 330px;
+}
+
+body {
+    height: 100%;
+    width: 100%;
+    background: #fff;
+}
+
+.g-header {
+    width: 100%;
+    height: 50px;
+    background: #c2c2c2;
+    margin: 0 auto;
+}
+
+.g-header .g-header-info {
+    width: 130px;
+    height: 100%;
+    float: left;
+    margin: 0;
+    margin-left: 10px;
+}
+
+.g-header .g-header-info .g-header-icon {
+    width: 30px;
+    height: 30px;
+    display: block;
+    background: url('../res/hub.png') no-repeat center;
+    background-size: 30px 30px;
+    float: left;
+    padding: 10px;
+    margin: 0;
+}
+
+.g-header .g-header-info .g-header-title {
+    width: 80px;
+    height: 100%;
+    display: block;
+    float: left;
+    margin: 0;
+    text-align: center;
+    line-height: 50px;
+    font-size: 20px;
+    font-family: 'Times New Roman';
+    color: #333;
+}
+
+.g-header .g-header-btnbox {
+    width: 80px;
+    height: 100%;
+    float: right;
+    margin: 0;
+    margin-right: 10px;
+}
+
+.g-header .g-header-btnbox .g-header-btn {
+    width: 30px;
+    height: 30px;
+    display: block;
+    float: right;
+    margin: 0;
+    padding: 10px 0;
+    text-align: center;
+    line-height: 30px;
+    font-size: 24px;
+    font-family: 'Times New Roman';
+    color: #333;
+}
+
+.g-header .g-header-btnbox .g-header-btn:hover {
+    color: #eee;
+}
+
+.g-body {
+    width: 100%;
+    height: 420px;
+    /* overflow: scroll; */
+    margin: 0 auto;
+}
+
+.g-body .g-body-table {
+    width: 100%;
+}
+
+.g-body .g-body-table tr {
+    height: 30px;
+    font-size: 14px;
+    text-align: center;
+    line-height: 30px;
+    color: #666;
+}
+.g-body .g-body-table .u-shell-editbtn {
+    display: block;
+    float: left;
+    margin: 10px 0;
+    width: 40px;
+    height: 20px;
+    font-size: 12px;
+    line-height: 20px;
+    cursor: pointer;
+}
+
+
+.g-footer {
+    width: 100%;
+    height: 60px;
+    background: #c2c2c2;
+}
+
+.g-footer .g-footer-btnbox {
+    width: 90px;
+    height: 100%;
+    float: left;
+    margin: 0 10px;
+    cursor: pointer;
+}
+
+.g-footer .g-footer-btnbox:hover {
+    background: #b2b2b2;
+}
+
+.g-footer .g-footer-btnbox .g-footer-icon {
+    display: block;
+    width: 30px;
+    height: 30px;
+    margin: 0 auto;
+    margin-top: 5px;
+}
+
+.g-footer .g-footer-btnbox .g-footer-btnname {
+    display: block;
+    height: 20px;
+    line-height: 20px;
+    font-size: 12px;
+    color: #333;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.g-footer .g-footer-btnbox .u-footer-addfile {
+    background: url('../res/add.png') no-repeat center;
+    background-size: 30px 30px;
+}
+
+.g-footer .g-footer-btnbox .u-footer-setup {
+    background: url('../res/set.png') no-repeat center;
+    background-size: 30px 30px;
+}
+
+.g-footer .g-footer-btnbox .u-footer-about {
+    background: url('../res/about.png') no-repeat center;
+    background-size: 30px 30px;
+}
+
+.g-html-black {
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, .5);
+    position: absolute;
+    margin: auto;
+    top: 0;
+    left: 0;
+    z-index:8;
+}
+
+.g-html-black .u-shell-addbox {
+    width: 300px;
+    height: 200px;
+    position: absolute;
+    margin: auto;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: white;
+}
+
+.g-html-black .u-shell-addbox .g-add-l {
+    width: 90%;
+    height: 40px;
+    margin: 0 auto;
+}
+
+.g-html-black .u-shell-addbox .g-add-l label {
+    display: inline-block;
+    float: left;
+    text-align: right;
+    width: 80px;
+    height: 40px;
+    font-size: 12px;
+    color: #333;
+    line-height: 40px;
+}
+
+.g-html-black .u-shell-addbox .g-add-l input {
+    float: left;
+    text-align: left;
+    padding: 0 4px;
+    height: 20;
+    font-size: 12px;
+    color: #333;
+    line-height: 20px;
+    margin: 7px 0;
+}
+
+.g-html-black .u-shell-addbox .g-add-l .u-input-l {
+    display: inline-block;
+    width: 160px;
+}
+
+.g-html-black .u-shell-addbox .g-add-l .u-input-m {
+    display: inline-block;
+    width: 100px;
+}
+
+.g-html-black .u-shell-addbox .g-add-l .u-input-s {
+    display: inline-block;
+    width: 50px;
+}
+
+.u-display-none{
+    display: none;
+}
+.u-display-block{
+    display: none;
+}
+.u-display-inblock{
+    display: inline-block;
+}
+
+.g-html-black .u-shell-addbox .g-add-l .j-select-file {
+    display: inline-block;
+    float: left;
+    text-align: center;
+    padding: 0 4px;
+    height: 20;
+    font-size: 12px;
+    line-height: 24px;
+    margin: 7px 2px;
+    background: #555;
+    color: #fff;
+    cursor: pointer;
+}
+
+.g-html-black .u-shell-addbox .g-add-btncontainer{
+    width: 240px;
+    height: 100%;
+    margin: 0 auto;
+}
+.g-html-black .u-shell-addbox .g-add-btn{
+    display: block;
+    width: 60px;
+    height: 24px;
+    font-size: 12px;
+    background: #555;
+    color: #fff;
+    text-align: center;
+    line-height: 24px;
+    float: left;
+    margin: 8px 30px;
+    cursor: pointer;
+}
+.g-html-black .u-message-box{
+    width: 160px;
+    height: 40px;
+    position: absolute;
+    margin: auto;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: rgba(0,0,0,.5);
+    z-index: 9;
+}
+.g-html-black .u-message-box .u-message-boxtip{
+    display: block;
+    line-height: 20px;
+    font-size: 12px;
+    color: #fff;
+    margin:10px auto;
+    text-align: center;
+}

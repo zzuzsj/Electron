@@ -1,0 +1,19 @@
+{
+  "name": "ShellHub",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "devDependencies": {
+    "vue": "^2.5.2",
+    "electron": "^1.6.11",
+    "electron-packager": "^8.7.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "packager": "electron-packager ./ src --out tankDIS --linux --arch=x64 --version 1.6.11 --overwrite --icon=./tank/ico.ico",
+    "packagerIG": "electron-packager ./ src --out tankDIS --linux --arch=x64 --version 1.6.11 --overwrite --icon=./tank/ico.ico --ignore=\"(dist|src|docs|.gitignore|LICENSE|README.md|webpack.config.js|node_modules)\"",
+    "packagerWin": "electron-packager ./ src --out dist --win32 --arch=x64 --version 1.6.11 --overwrite"
+  },
+  "author": "",
+  "license": "ISC"
+}
