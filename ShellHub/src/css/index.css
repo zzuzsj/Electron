@@ -193,6 +193,7 @@ body {
     top: 0;
     bottom: 0;
     background: white;
+    overflow: hidden;
 }
 
 .g-html-black .u-shell-addbox .g-add-l {
@@ -281,7 +282,7 @@ body {
     cursor: pointer;
 }
 .g-html-black .u-message-box{
-    width: 160px;
+    width: 80%;
     height: 40px;
     position: absolute;
     margin: auto;
@@ -299,4 +300,188 @@ body {
     color: #fff;
     margin:10px auto;
     text-align: center;
+}
+
+
+.g-html-black .u-shell-setbox {
+    width: 90%;
+    height: 80px;
+    position: absolute;
+    margin: auto;
+    padding: 10px 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: white;
+    overflow: hidden;
+}
+
+.g-html-black .u-shell-setbox .g-set-l {
+    width: 90%;
+    height: 40px;
+    margin: 0 auto;
+}
+
+.g-html-black .u-shell-setbox .g-set-l label {
+    display: inline-block;
+    float: left;
+    text-align: right;
+    width: 80px;
+    height: 40px;
+    font-size: 12px;
+    color: #333;
+    line-height: 40px;
+}
+
+.g-html-black .u-shell-setbox .g-set-l .u-set-label {
+    display: inline-block;
+    float: left;
+    text-align: center;
+    width: 32px;
+    height: 40px;
+    font-size: 12px;
+    color: #333;
+    line-height: 40px;
+    margin-left:10px;
+}
+
+.g-html-black .u-shell-setbox .g-set-l input {
+    float: left;
+    text-align: left;
+    padding: 0 4px;
+    height: 20px;
+    font-size: 12px;
+    color: #333;
+    line-height: 20px;
+    margin: 7px 0;
+}
+.g-html-black .u-shell-setbox .g-set-l .u-set-radio {
+    height: 25px;
+    font-size: 12px;
+    color: #333;
+    line-height: 20px;
+    margin: 7px 0;
+}
+.g-html-black .u-shell-setbox .g-set-l .u-input-l {
+    display: inline-block;
+    width: 160px;
+}
+
+.g-html-black .u-shell-setbox .g-set-l .u-input-m {
+    display: inline-block;
+    width: 100px;
+}
+
+.g-html-black .u-shell-setbox .g-set-l .u-input-s {
+    display: inline-block;
+    width: 50px;
+}
+.g-html-black .u-shell-setbox .g-set-l .j-select-file {
+    display: inline-block;
+    float: left;
+    text-align: center;
+    padding: 0 4px;
+    height: 20;
+    font-size: 12px;
+    line-height: 24px;
+    margin: 7px 2px;
+    background: #555;
+    color: #fff;
+    cursor: pointer;
+}
+
+.g-html-black .u-shell-aboutbox {
+    width: 90%;
+    height: 240px;
+    position: absolute;
+    margin: auto;
+    padding: 10px 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: white;
+    overflow: hidden;
+}
+
+.g-html-black .u-shell-aboutbox .g-about-l {
+    width: 90%;
+    height: 40px;
+    margin: 0 auto;
+}
+
+.g-html-black .u-shell-aboutbox .g-about-l label {
+    display: inline-block;
+    float: left;
+    text-align: right;
+    width: 80px;
+    height: 40px;
+    font-size: 12px;
+    color: #333;
+    line-height: 40px;
+}
+
+.g-html-black .u-shell-aboutbox .g-about-l .u-about-label {
+    display: inline-block;
+    float: left;
+    text-align: center;
+    width: 32px;
+    height: 40px;
+    font-size: 12px;
+    color: #333;
+    line-height: 40px;
+    margin-left:10px;
+}
+
+.g-html-black .u-shell-aboutbox .g-about-l p {
+    float: left;
+    text-align: left;
+    padding: 0 4px;
+    height: 20px;
+    font-size: 12px;
+    color: #333;
+    line-height: 20px;
+    margin: 8px 0;
+}
+.g-html-black .u-shell-aboutbox .g-about-l a {
+    float: left;
+    text-align: left;
+    padding: 0 4px;
+    height: 20px;
+    font-size: 12px;
+    color: #333;
+    line-height: 20px;
+    text-decoration: none;
+    margin: 10px 0;
+}
+.g-html-black .u-shell-aboutbox .g-about-h {
+   height: 80px;
+}
+.g-html-black .u-shell-aboutbox .g-about-l .u-input-l {
+    display: inline-block;
+    width: 160px;
+}
+
+.g-html-black .u-shell-aboutbox .g-about-l .u-input-m {
+    display: inline-block;
+    width: 100px;
+}
+
+.g-html-black .u-shell-aboutbox .g-about-l .u-input-s {
+    display: inline-block;
+    width: 50px;
+}
+.g-html-black .u-shell-aboutbox .g-about-l .j-select-file {
+    display: inline-block;
+    float: left;
+    text-align: center;
+    padding: 0 4px;
+    height: 20;
+    font-size: 12px;
+    line-height: 24px;
+    margin: 7px 2px;
+    background: #555;
+    color: #fff;
+    cursor: pointer;
 }

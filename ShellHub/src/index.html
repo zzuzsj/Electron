@@ -65,7 +65,7 @@
             <b class="g-footer-btnname">关于</b>
         </div>
     </div>
-    <div class="g-html-black" id="hubBlack" v-show="isShow">
+    <div class="g-html-black" id="hubBlack" v-show="isShow" @click.self="hideBlack($event)">
         <div class="u-shell-addbox" v-show="activeState == 'add'">
             <div class="g-add-l u-clearfix">
                 <label>脚本名称：</label>
@@ -105,6 +105,54 @@
                 </div>
             </div>
         </div>
+        <div class="u-shell-setbox" v-show="activeState == 'set'">
+            <div class="g-set-l u-clearfix">
+                <label>弹窗选项：</label>
+                <div>
+                    <label class="u-set-label"><input class="u-set-radio" name="Alert" type="radio" :checked="alertResult == 1" value="1" @change="setAlert(1)">是 </label> 
+                    <label class="u-set-label"><input class="u-set-radio" name="Alert" type="radio" :checked="alertResult == 0" value="0" @change="setAlert(0)">否 </label> 
+                </div>
+            </div>
+            <div class="g-set-l u-clearfix">
+                <label>依赖包下载：</label>
+                <div>
+                    <input class="u-input-m" type="text" ref="npmNames" placeholder="例子：jquery vue">
+                    <a class="j-select-file u-input-s" @click="npmInstall">下载</a>
+                </div>
+            </div>
+        </div>
+        <div class="u-shell-aboutbox" v-show="activeState == 'about'">
+            <div class="g-about-l u-clearfix">
+                <label>名字：</label>
+                <div>
+                    <p class="u-input-l">ShellHub</p>
+                </div>
+            </div>
+            <div class="g-about-l u-clearfix">
+                <label>版本：</label>
+                <div>
+                    <p class="u-input-l">1.0.0</p>
+                </div>
+            </div>
+            <div class="g-about-l g-about-h u-clearfix">
+                <label>说明：</label>
+                <div>
+                    <p class="u-input-l">node脚本管理界面，可直接添加和运行脚本。可指定输出目录，输出目录将作为执行脚本命令的最后一个参数传入。</p>
+                </div>
+            </div>
+            <div class="g-about-l u-clearfix">
+                <label>作者：</label>
+                <div>
+                     <p class="u-input-l">zzuzsj</p>
+                </div>
+            </div>
+            <div class="g-about-l u-clearfix">
+                <label>Git地址：</label>
+                <div>
+                    <a class="u-input-l" @click="hrefGit">https://github.com/zzuzsj/Electron</a>
+                </div>
+            </div>
+        </div>
         <div class="u-message-box" v-show="alertTips">
             <p class="u-message-boxtip">{{ tips }}</p>
         </div>
@@ -115,12 +163,15 @@
     const ipcRenderer = require('electron').ipcRenderer;
     const dialog = require('electron').remote.dialog;
     const app = require('electron').remote.app;
+    const shell = require('electron').shell;
     const fs = require('fs');
     const child_process = require('child_process');
+    let develop = false;
+    let configPath = develop?'./src/config/':'./resources/app/src/config/';
     let userPath = app.getPath('userData');
     if (!fs.existsSync(userPath + '/Shell')) {
         fs.mkdirSync(userPath + '/Shell');
-        var json = `{
+        let json = `{
             "name": "shellhub",
             "version": "1.0.0",
             "description": "This is a exe for running node shells ",
@@ -144,10 +195,17 @@
             flag:'w'
         });
     };
-    let shellTxt = fs.readFileSync('./resources/app/src/config/shell.json', {
+    let shellTxt = fs.readFileSync(configPath+'shell.json', {
         encoding: 'utf-8'
     });
     let shellJson = JSON.parse(shellTxt);
+    let alertResult;
+    if(localStorage.getItem('alertResult')){
+        alertResult = localStorage.getItem('alertResult');
+    }else{
+        alertResult = 1;
+        localStorage.setItem('alertResult',1);
+    }
     let shellArray = [];
     for (let k in shellJson) {
         shellArray.push(k);
@@ -171,13 +229,13 @@
         data: {
             title: 'ShellHub',
             shellData: shellJson,
-            shellArray: shellArray
+            shellArray: shellArray,
         },
         methods: {
             shellRun: function (shellName) {
                 if (shellName) {
                     let runcode = this.$data.shellData[shellName].runCode;
-                    var shellpath = [userPath.replace(/\\/g,'\\\\'),'Shell',shellJson[shellName].fileName].join('\\\\');
+                    let shellpath = [userPath.replace(/\\/g,'\\\\'),'Shell',shellJson[shellName].fileName].join('\\\\');
                     runcode = runcode.split(' ');
                     // runcode = runcode.splice(1,1,shellpath);
                     runcode[1]=shellpath;
@@ -188,8 +246,11 @@
                         if (error) {
                             throw error;
                         }
+                        console.log(black.$data.alertResult)
                         this.$data.shellData[shellName].running = false;                        
-                        alert(stdout);
+                        if(black.$data.alertResult){
+                            alert(stdout);
+                        }
                         if(stderr){
                             alert("脚本运行出错，返回错误为："+stderr);
                         }
@@ -218,7 +279,7 @@
             },
             saveShellJson: function () {
                 let jsonStr = JSON.stringify(shellJson);
-                fs.writeFile('./resources/app/src/config/shell.json', jsonStr, {
+                fs.writeFile(configPath+'shell.json', jsonStr, {
                     encoding: 'utf-8',
                     flag: 'w'
                 }, function () {
@@ -263,6 +324,7 @@
             activeState: 'none',
             fillInfo: false,
             alertTips: false,
+            alertResult:alertResult,
             tips: 'none',
             curShell: {}
         },
@@ -336,11 +398,48 @@
                     }
                 }
             },
-            hideBlack: function () {
+            npmInstall:function(){
+                let that = this;
+                let npms = that.$refs.npmNames.value;
+                if(!npms || npms ==''){
+                    that.$data.tips = '请填入需要下载的安装包，如 jquery vue';
+                    that.$data.alertTips = true;
+                    setTimeout(function () {
+                        that.$data.tips = 'none';
+                        that.$data.alertTips = false;
+                    }, 1000);
+                    return false;
+                }
+                let path = userPath.replace(/\\/g,'\\\\')+'/Shell';
+                let runcode = 'cd '+path+'&&npm install '+npms+' --save';
+                that.$data.tips = '依赖包下载中';
+                that.$data.alertTips = true;
+                child_process.exec(runcode, (error, stdout, stderr) => {
+                    if (error) {
+                        throw error;
+                    }
+                    if(stdout){
+                        that.$data.tips="依赖包下载成功";
+                        that.$data.alertTips = false;
+                    }
+                    if(stderr){
+                        alert("依赖包下载出错，返回错误为："+stderr);
+                    }
+                });
+            },
+            setAlert:function(state){
+                this.$data.alertResult = state;
+                localStorage.setItem('alertResult',state);
+            },
+            hideBlack: function (e) {
+                if(this.$data.alertTips){
+                    return;
+                }
                 this.$data.isShow = false;
                 this.$data.activeState = 'none';
                 this.$data.fillInfo = false;
                 this.$data.curShell = {};
+                this.$refs.npmNames.value='';
             },
             fileTrigger: function () {
                 this.$refs.fileDom.click();
@@ -361,6 +460,9 @@
                         return;
                     }
                 });
+            },
+            hrefGit:function(){
+                shell.openExternal("https://github.com/zzuzsj/Electron");
             }
         }
     });

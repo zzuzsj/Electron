@@ -9,18 +9,19 @@ let win
 function createWindow () {
   // Create the browser window.
   win = new BrowserWindow({
-    width: 800, 
+    width: 330, 
+    // width:800,
     height: 530,
-    resizable:true,
+    resizable:false,
     darkTheme:true,
     transparent:true,
     autoHideMenuBar:true,
     titleBarStyle:'none',
     title:'ShellHub',
     useContentSize:true,
-    frame:true,
+    frame:false,
     webPreferences:{
-      devTools:true
+      devTools:false
     }
 })
 
